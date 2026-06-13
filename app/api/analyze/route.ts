@@ -10,7 +10,7 @@ const cache = createCache<AnalysisResult>(ANALYSIS_TTL_MS);
 
 export async function POST(req: Request) {
   try {
-    const { channelUrl } = await req.json();
+    const { channelUrl, refresh } = await req.json();
     if (!channelUrl || typeof channelUrl !== 'string') {
       return NextResponse.json({ error: '채널 URL을 입력하세요.' }, { status: 400 });
     }
@@ -19,7 +19,8 @@ export async function POST(req: Request) {
     const key = `${ref.type}:${ref.value}`;
     const now = Date.now();
 
-    let result = cache.get(key, now);
+    // refresh=true면 캐시를 우회하고 새로 분석한 뒤 캐시를 덮어쓴다.
+    let result = refresh === true ? undefined : cache.get(key, now);
     if (!result) {
       result = await analyzeChannel(channelUrl, new Date(now));
       cache.set(key, result, now); // 성공 결과만 캐싱(에러는 throw로 전파, 캐싱 안 됨)
