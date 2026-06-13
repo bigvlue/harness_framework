@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import type { AnalysisResult, VideoStat } from '@/types/analysis';
 import { formatKoreanCount } from '@/lib/analysis';
 
@@ -93,9 +94,14 @@ export default function Home() {
 
   return (
     <main className="mx-auto max-w-5xl px-5 py-10">
-      <h1 className="mb-6 text-[28px] font-bold text-label-normal">
-        🎬 YouTube 콘텐츠 추천기
-      </h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-[28px] font-bold text-label-normal">
+          🎬 YouTube 콘텐츠 추천기
+        </h1>
+        <Link href="/compare" className="text-[15px] text-primary hover:underline">
+          여러 채널 비교 →
+        </Link>
+      </div>
 
       <div className="flex gap-3">
         <input
