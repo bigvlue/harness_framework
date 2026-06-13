@@ -1,6 +1,7 @@
 export interface VideoStat {
   videoId: string;
   title: string;
+  channelId?: string; // 자기 채널 영상 제외용 (표시 이름 대신 ID로 비교)
   channelTitle: string;
   viewCount: number;
   publishedAt: string; // ISO 8601

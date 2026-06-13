@@ -274,6 +274,7 @@ git commit -m "chore: scaffold Next.js app with Wanted design tokens, Pretendard
 export interface VideoStat {
   videoId: string;
   title: string;
+  channelId?: string; // 자기 채널 영상 제외용 (표시 이름 대신 ID로 비교)
   channelTitle: string;
   viewCount: number;
   publishedAt: string; // ISO 8601
@@ -692,6 +693,7 @@ async function call(path: string, params: Record<string, string>): Promise<any> 
 }
 
 async function resolveChannel(ref: ChannelRef): Promise<{
+  channelId: string;
   title: string;
   uploadsPlaylist: string;
   subscriberCount: number;
@@ -704,6 +706,7 @@ async function resolveChannel(ref: ChannelRef): Promise<{
   const item = data.items?.[0];
   if (!item) throw new Error('채널을 찾을 수 없습니다. URL을 확인하세요.');
   return {
+    channelId: item.id,
     title: item.snippet.title,
     uploadsPlaylist: item.contentDetails.relatedPlaylists.uploads,
     subscriberCount: Number(item.statistics.subscriberCount ?? 0),
@@ -726,6 +729,7 @@ async function getVideoDetails(ids: string[]): Promise<VideoStat[]> {
   return (data.items ?? []).map((i: any) => ({
     videoId: i.id,
     title: i.snippet.title,
+    channelId: i.snippet.channelId,
     channelTitle: i.snippet.channelTitle,
     viewCount: Number(i.statistics.viewCount ?? 0),
     publishedAt: i.snippet.publishedAt,
@@ -772,7 +776,7 @@ export async function analyzeChannel(input: string, now: Date): Promise<Analysis
   const candidateIds = [...new Set(idSets.flat())].slice(0, 50); // videos.list 최대 50개
   const candidates = await getVideoDetails(candidateIds);
   const viralVideos = rankVideos(
-    candidates.filter((v) => v.channelTitle !== channel.title),
+    candidates.filter((v) => v.channelId !== channel.channelId),
     now,
     10,
   );
