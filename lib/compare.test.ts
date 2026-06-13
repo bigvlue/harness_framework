@@ -31,6 +31,10 @@ describe('compareKeywords', () => {
     expect(compareKeywords(['a', 'b'], [])).toEqual({ common: [], onlyA: ['a', 'b'], onlyB: [] });
   });
 
+  it('양쪽 모두 빈 배열', () => {
+    expect(compareKeywords([], [])).toEqual({ common: [], onlyA: [], onlyB: [] });
+  });
+
   it('순서 보존: common·onlyA는 a 순서, onlyB는 b 순서', () => {
     const r = compareKeywords(['z', 'm', 'a'], ['a', 'z', 'q']);
     expect(r.common).toEqual(['z', 'a']); // a의 순서 유지
