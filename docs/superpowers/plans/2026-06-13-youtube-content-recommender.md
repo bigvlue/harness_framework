@@ -899,6 +899,7 @@ function VideoBars({ videos, barClass }: { videos: VideoStat[]; barClass: string
           <a
             href={v.url}
             target="_blank"
+            rel="noopener noreferrer"
             className="block truncate text-[15px] text-label-normal hover:text-primary"
           >
             {v.title}
@@ -954,7 +955,8 @@ export default function Home() {
     a.href = URL.createObjectURL(blob);
     a.download = 'report.md';
     a.click();
-    URL.revokeObjectURL(a.href);
+    // Firefox는 click() 후 비동기로 다운로드를 시작하므로 즉시 revoke하면 실패할 수 있음
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
 
   return (
@@ -968,6 +970,7 @@ export default function Home() {
           className="flex-1 rounded-frame border border-line-normal bg-bg-normal px-4 py-3 text-[16px] text-label-normal outline-none focus:border-primary"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          aria-label="채널 URL"
           placeholder="채널 URL (예: https://www.youtube.com/@coolmoonchoi)"
         />
         <button
@@ -1022,6 +1025,7 @@ export default function Home() {
                     key={k}
                     href={`https://www.youtube.com/results?search_query=${encodeURIComponent(k)}`}
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="rounded-frame bg-fill-normal px-3 py-1 text-[15px] text-label-neutral hover:text-primary"
                   >
                     {k}
