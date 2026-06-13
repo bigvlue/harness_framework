@@ -262,6 +262,8 @@ git commit -m "chore: scaffold Next.js app with Wanted design tokens, Pretendard
 
 ## Task 2: 공용 타입 + 순수 분석 함수 (TDD)
 
+> 사후 개선(키워드 품질): `tokenize`에 ① 강화된 클릭베이트·상거래 불용어, ② 명사형 조사 절단(`stripParticle`, 은/는/이/가 제외), ③ 순수 숫자 토큰 제거를 추가하고, `topKeywords` 동순위 타이브레이크를 길이순으로 변경. 아래 코드 블록은 초기 MVP 기준이며, 최신 동작은 `lib/analysis.ts`와 그 테스트가 소스 오브 트루스다.
+
 **Files:**
 - Create: `types/analysis.ts`
 - Create: `lib/analysis.test.ts`

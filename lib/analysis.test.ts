@@ -38,12 +38,33 @@ describe('tokenize', () => {
     expect(toks).toContain('맛있는');
     expect(toks).toContain('레시피');
   });
+  it('명사형 조사(들/을/를/의/에서/으로/까지)를 제거해 변형을 병합', () => {
+    expect(tokenize('가방을 노래를')).toEqual(['가방', '노래']);
+    expect(tokenize('서울에서 부산까지')).toEqual(['서울', '부산']);
+  });
+  it('동사/형용사 어미·명사 끝글자와 겹치는 은/는/이/가는 절단하지 않음', () => {
+    expect(tokenize('고양이')).toEqual(['고양이']); // 이 보존
+    expect(tokenize('맛있는')).toEqual(['맛있는']); // 는 보존
+  });
+  it('클릭베이트·상거래 상투어를 불용어로 제거', () => {
+    expect(tokenize('이번주 무조건 사고싶은 신제품 제품들 모음')).toEqual([]);
+  });
+  it('순수 숫자 토큰은 검색 노이즈라 제거 (모델명의 영숫자는 유지)', () => {
+    expect(tokenize('갤럭시 16 2026')).toEqual(['갤럭시']);
+    expect(tokenize('rtx4090 11')).toEqual(['rtx4090']);
+  });
 });
 
 describe('topKeywords', () => {
   it('빈도 상위 키워드를 n개 반환', () => {
     const texts = ['ramen ramen sushi', 'ramen tempura', 'sushi'];
     expect(topKeywords(texts, 2)).toEqual(['ramen', 'sushi']);
+  });
+  it('빈도가 같으면 더 긴(구체적) 토큰을 우선', () => {
+    expect(topKeywords(['커피 아메리카노'], 2)).toEqual(['아메리카노', '커피']);
+  });
+  it('빈도가 길이보다 우선', () => {
+    expect(topKeywords(['커피 커피 아메리카노'], 2)).toEqual(['커피', '아메리카노']);
   });
 });
 
