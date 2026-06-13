@@ -73,19 +73,24 @@ export default function Compare() {
     setLoading(true);
     setError('');
     setPair(null);
-    const [ra, rb] = await Promise.allSettled([fetchAnalyze(urlA), fetchAnalyze(urlB)]);
-    if (ra.status === 'rejected' || rb.status === 'rejected') {
-      const parts: string[] = [];
-      if (ra.status === 'rejected')
-        parts.push(`채널 A(${urlA}): ${ra.reason instanceof Error ? ra.reason.message : '실패'}`);
-      if (rb.status === 'rejected')
-        parts.push(`채널 B(${urlB}): ${rb.reason instanceof Error ? rb.reason.message : '실패'}`);
-      setError(parts.join(' / '));
+    try {
+      const [ra, rb] = await Promise.allSettled([
+        fetchAnalyze(urlA.trim()),
+        fetchAnalyze(urlB.trim()),
+      ]);
+      if (ra.status === 'rejected' || rb.status === 'rejected') {
+        const parts: string[] = [];
+        if (ra.status === 'rejected')
+          parts.push(`채널 A(${urlA}): ${ra.reason instanceof Error ? ra.reason.message : '실패'}`);
+        if (rb.status === 'rejected')
+          parts.push(`채널 B(${urlB}): ${rb.reason instanceof Error ? rb.reason.message : '실패'}`);
+        setError(parts.join(' / '));
+        return;
+      }
+      setPair({ a: ra.value, b: rb.value });
+    } finally {
       setLoading(false);
-      return;
     }
-    setPair({ a: ra.value, b: rb.value });
-    setLoading(false);
   }
 
   const kw = pair ? compareKeywords(pair.a.channelKeywords, pair.b.channelKeywords) : null;
