@@ -490,10 +490,10 @@ export function extractRecommendations(
   }
   const ranked = [...counts.entries()]
     .sort((a, b) => {
+      if (b[1].count !== a[1].count) return b[1].count - a[1].count; // 빈도 높은 순
       const aGap = channelSet.has(a[0]) ? 0 : 1;
       const bGap = channelSet.has(b[0]) ? 0 : 1;
-      if (aGap !== bGap) return bGap - aGap; // gap(미커버) 우선
-      return b[1].count - a[1].count;        // 그다음 빈도순
+      return bGap - aGap; // 빈도 동일 시 gap(미커버) 우선
     })
     .slice(0, n);
 
