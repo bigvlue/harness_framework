@@ -129,5 +129,6 @@ export async function analyzeChannel(input: string, now: Date): Promise<Analysis
     channelBest,
     viralVideos,
     recommendations,
+    analyzedAt: now.toISOString(),
   };
 }

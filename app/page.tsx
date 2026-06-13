@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { AnalysisResult, VideoStat } from '@/types/analysis';
 import { formatKoreanCount } from '@/lib/analysis';
+import { formatRelativeTime } from '@/lib/time';
 
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
@@ -134,9 +135,14 @@ export default function Home() {
 
       {result && (
         <div className="mt-8 space-y-5">
-          <h2 className="text-[24px] font-bold text-label-normal">
-            📊 {result.channelTitle} — 콘텐츠 대시보드
-          </h2>
+          <div>
+            <h2 className="text-[24px] font-bold text-label-normal">
+              📊 {result.channelTitle} — 콘텐츠 대시보드
+            </h2>
+            <p className="mt-1 text-[13px] text-label-alt">
+              🕒 {formatRelativeTime(result.analyzedAt, new Date())} 분석됨
+            </p>
+          </div>
 
           {/* KPI 타일 */}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

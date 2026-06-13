@@ -15,6 +15,7 @@ const sample: AnalysisResult = {
   recommendations: [
     { topic: '"매운" 주제 콘텐츠', rationale: '바이럴 영상 「매운 먹방」', fit: '확장 기회', expansion: true },
   ],
+  analyzedAt: '2026-06-14T12:00:00Z',
 };
 
 describe('buildReport', () => {
