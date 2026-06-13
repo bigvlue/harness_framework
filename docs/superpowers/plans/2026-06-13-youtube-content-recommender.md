@@ -405,6 +405,9 @@ describe('formatKoreanCount', () => {
     expect(formatKoreanCount(120000000)).toBe('1.2억');
     expect(formatKoreanCount(950)).toBe('950');
   });
+  it('천만 단위에서 로케일 쉼표 없이 결정적으로 표시', () => {
+    expect(formatKoreanCount(12000000)).toBe('1200만');
+  });
 });
 ```
 
@@ -510,7 +513,7 @@ export function extractRecommendations(
 
 export function formatKoreanCount(n: number): string {
   if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}억`;
-  if (n >= 10_000) return `${Math.round(n / 10_000).toLocaleString()}만`;
+  if (n >= 10_000) return `${Math.round(n / 10_000)}만`; // 로케일 쉼표 방지(결정적)
   return n.toLocaleString();
 }
 ```

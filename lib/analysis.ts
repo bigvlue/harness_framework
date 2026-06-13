@@ -91,6 +91,6 @@ export function extractRecommendations(
 
 export function formatKoreanCount(n: number): string {
   if (n >= 100_000_000) return `${(n / 100_000_000).toFixed(1)}억`;
-  if (n >= 10_000) return `${Math.round(n / 10_000).toLocaleString()}만`;
+  if (n >= 10_000) return `${Math.round(n / 10_000)}만`;
   return n.toLocaleString();
 }
