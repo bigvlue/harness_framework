@@ -6,6 +6,20 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-14
+
+분석 효율과 비교·재현성을 높인 기능 추가. v0.1.0과 하위 호환.
+
+### Added
+- 분석 결과 캐싱: 같은 채널 재요청 시 인메모리 TTL 캐시(6시간)로 YouTube API 쿼터 절약
+- 강제 재분석: 캐시를 우회하는 `refresh` 플래그 + 대시보드 "강제 재분석" 버튼
+- 여러 채널 비교: `/compare` 페이지에서 두 채널의 키워드를 나란히 비교
+- 캐시 상태 표시: 대시보드에 "N분 전 분석됨" 상대 시간 노출(분석 시각을 결과에 기록)
+
+[Unreleased]: https://github.com/bigvlue/harness_framework/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/bigvlue/harness_framework/releases/tag/v0.2.0
+[0.1.0]: https://github.com/bigvlue/harness_framework/releases/tag/v0.1.0
+
 ## [0.1.0] - 2026-06-13
 
 첫 MVP. YouTube 채널을 분석해 다음 콘텐츠를 추천하는 대시보드.
@@ -26,6 +40,3 @@
 - 키는 `.env`의 `YOUTUBE_API_KEY`로 설정. 빈 `.env.local`은 `.env`를 가리므로 두지 말 것.
 - 키워드 추출은 휴리스틱이라 태그가 없고 제목이 클릭베이트형인 채널에서는 노이즈가 남을 수 있음
   (의미 수준 정제는 형태소 분석/LLM 영역으로 현재 범위 밖).
-
-[Unreleased]: https://github.com/bigvlue/harness_framework/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/bigvlue/harness_framework/releases/tag/v0.1.0
