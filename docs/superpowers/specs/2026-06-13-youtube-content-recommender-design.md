@@ -163,9 +163,10 @@ LLM 없이 빈도·조회수·gap 기반 → 설명 가능하고 단순.
 
 ## 환경 변수
 
-- `.env.local`: `YOUTUBE_API_KEY=<YouTube Data API v3 키>` (커밋 금지)
+- `.env`: `YOUTUBE_API_KEY=<YouTube Data API v3 키>` (커밋 금지) — 실제 사용 위치
 - `.env.example`: 양식 안내
-- `.gitignore`에 `.env.local` 추가
+- `.gitignore`에 `.env`·`.env.local` 추가
+- ⚠ 함정: Next.js는 `.env.local`이 `.env`보다 **우선**한다. 빈 값(`YOUTUBE_API_KEY=`)이 든 `.env.local`이 있으면 `.env`의 실제 키를 가려서 키 누락 에러가 난다. 키를 `.env`에 둘 거면 빈 `.env.local`을 두지 말 것.
 
 ## 에러 처리 (MVP 최소)
 

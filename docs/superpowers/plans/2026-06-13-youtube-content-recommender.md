@@ -676,7 +676,7 @@ const API = 'https://www.googleapis.com/youtube/v3';
 
 function apiKey(): string {
   const k = process.env.YOUTUBE_API_KEY;
-  if (!k) throw new Error('YOUTUBE_API_KEY가 설정되지 않았습니다. .env.local을 확인하세요.');
+  if (!k) throw new Error('YOUTUBE_API_KEY가 설정되지 않았습니다. .env(또는 .env.local)를 확인하세요.');
   return k;
 }
 
