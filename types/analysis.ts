@@ -29,4 +29,5 @@ export interface AnalysisResult {
   channelBest: VideoStat[];
   viralVideos: VideoStat[];
   recommendations: Recommendation[];
+  analyzedAt: string; // 분석 수행 시각 (ISO 8601). 캐시 히트 시 원래 분석 시각 유지.
 }
