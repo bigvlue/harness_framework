@@ -60,7 +60,7 @@ export default function Home() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [report, setReport] = useState('');
 
-  async function analyze() {
+  async function analyze(refresh = false) {
     setLoading(true);
     setError('');
     setResult(null);
@@ -68,7 +68,7 @@ export default function Home() {
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ channelUrl: url }),
+        body: JSON.stringify({ channelUrl: url, refresh }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? '분석에 실패했습니다.');
@@ -107,7 +107,7 @@ export default function Home() {
         />
         <button
           className="rounded-frame bg-primary px-6 py-3 text-[16px] font-medium text-white hover:bg-primary-strong active:bg-primary-heavy disabled:opacity-50"
-          onClick={analyze}
+          onClick={() => analyze()}
           disabled={loading || url.trim() === ''}
         >
           {loading ? '분석 중…' : '분석'}
@@ -192,6 +192,13 @@ export default function Home() {
 
           {/* 하단 액션 */}
           <div className="flex gap-3">
+            <button
+              className="rounded-frame border border-line-normal bg-bg-normal px-5 py-3 text-[16px] font-medium text-label-normal hover:bg-bg-alt disabled:opacity-50"
+              onClick={() => analyze(true)}
+              disabled={loading || url.trim() === ''}
+            >
+              ♻ 강제 재분석
+            </button>
             <button
               className="rounded-frame border border-line-normal bg-bg-normal px-5 py-3 text-[16px] font-medium text-label-normal hover:bg-bg-alt"
               onClick={download}
