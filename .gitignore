@@ -10,3 +10,7 @@ phases/**/step*-output.json
 
 # local Claude Code settings
 .claude/settings.local.json
+
+# environment variables (secrets)
+.env
+.env.local
