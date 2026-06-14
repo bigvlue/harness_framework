@@ -33,6 +33,14 @@ function stripParticle(token: string): string {
   return token;
 }
 
+// 사-한자 숫자어. 이런 글자로만 이뤄진 3글자 이상 토큰은 숫자 나열(예: '일십백천만')이라 주제어가 아니다.
+// 길이 3 이상으로 제한해 '사육'·'오만' 같은 2글자 실단어 오제거를 막는다.
+const NUMBER_WORDS = new Set('영공일이삼사오육칠팔구십백천만억조');
+
+function isNumberWordRun(token: string): boolean {
+  return token.length >= 3 && [...token].every((c) => NUMBER_WORDS.has(c));
+}
+
 export function parseChannelInput(input: string): ChannelRef {
   const s = input.trim();
   const channelMatch = s.match(/\/channel\/(UC[\w-]+)/);
@@ -47,7 +55,14 @@ export function tokenize(text: string): string[] {
   const raw = text.toLowerCase().match(/[a-z0-9]+|[가-힣]+/g) ?? [];
   return raw
     .map((t) => (/[가-힣]/.test(t) ? stripParticle(t) : t))
-    .filter((t) => t.length >= 2 && !STOPWORDS.has(t) && !/^\d+$/.test(t));
+    .filter(
+      (t) =>
+        t.length >= 2 &&
+        !STOPWORDS.has(t) &&
+        !/^\d+$/.test(t) && // 순수 숫자
+        !isNumberWordRun(t) && // 한글 숫자어 나열
+        !t.endsWith('니다'), // 활용 서술어(습니다/입니다/…)
+    );
 }
 
 // documents: 영상 1개 = 문서 1개(제목+태그를 합친 문자열).
