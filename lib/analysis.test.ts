@@ -56,6 +56,15 @@ describe('tokenize', () => {
     expect(tokenize('갤럭시 16 2026')).toEqual(['갤럭시']);
     expect(tokenize('rtx4090 11')).toEqual(['rtx4090']);
   });
+  it('한글 숫자어로만 이뤄진 3글자 이상 토큰(숫자 나열)은 제거', () => {
+    expect(tokenize('일십백천만십만 dji')).toEqual(['dji']);
+  });
+  it('숫자어 2글자 실단어(사육·오만)는 보존', () => {
+    expect(tokenize('사육 오만')).toEqual(['사육', '오만']);
+  });
+  it('니다로 끝나는 활용 서술어 토큰은 제거', () => {
+    expect(tokenize('잘만들었습니다 카메라')).toEqual(['카메라']);
+  });
 });
 
 describe('topKeywords', () => {
