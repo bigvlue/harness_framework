@@ -6,6 +6,8 @@ const STOPWORDS = new Set([
   // 영어
   'the', 'a', 'an', 'and', 'or', 'of', 'to', 'in', 'on', 'for', 'with', 'is',
   'are', 'this', 'that', 'how', 'what', 'you', 'your', 'my',
+  'when', 'where', 'why', 'which', 'who', 'will', 'would', 'should',
+  'can', 'could', 'do', 'does', 'did', 'vs', 'get', 'got',
   // 한국어 빈출
   '그리고', '하는', '하기', '이것', '저것', '정말', '진짜', '너무', '오늘',
   '우리', '내가', '나의', '영상', '구독', '좋아요', '채널',
@@ -48,17 +50,31 @@ export function tokenize(text: string): string[] {
     .filter((t) => t.length >= 2 && !STOPWORDS.has(t) && !/^\d+$/.test(t));
 }
 
-export function topKeywords(texts: string[], n: number): string[] {
-  const counts = new Map<string, number>();
-  for (const text of texts) {
-    for (const tok of tokenize(text)) {
-      counts.set(tok, (counts.get(tok) ?? 0) + 1);
+// documents: 영상 1개 = 문서 1개(제목+태그를 합친 문자열).
+// 클릭베이트 채널에선 한 영상에서만 반복되는 잡음 단어가 TF로는 높게 잡히므로,
+// "몇 개의 영상에 걸쳐 등장했는가"(문서 빈도, DF)를 1순위로 본다.
+// DF 동률이면 전체 출현 빈도(TF), 그다음 길이(구체성) 순.
+export function topKeywords(documents: string[], n: number): string[] {
+  const df = new Map<string, number>(); // 문서(영상) 빈도
+  const tf = new Map<string, number>(); // 전체 출현 빈도
+  for (const doc of documents) {
+    const seen = new Set<string>();
+    for (const tok of tokenize(doc)) {
+      tf.set(tok, (tf.get(tok) ?? 0) + 1);
+      if (!seen.has(tok)) {
+        df.set(tok, (df.get(tok) ?? 0) + 1);
+        seen.add(tok);
+      }
     }
   }
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1] || b[0].length - a[0].length) // 빈도 → 길이(구체성) 순
-    .slice(0, n)
-    .map(([word]) => word);
+  return [...df.keys()]
+    .sort(
+      (a, b) =>
+        df.get(b)! - df.get(a)! || // 여러 영상에 걸친 주제 우선
+        tf.get(b)! - tf.get(a)! || // 동률이면 전체 빈도
+        b.length - a.length, // 그다음 길이(구체성)
+    )
+    .slice(0, n);
 }
 
 export function scoreVideo(viewCount: number, publishedAt: string, now: Date): number {
