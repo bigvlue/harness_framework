@@ -49,6 +49,9 @@ describe('tokenize', () => {
   it('클릭베이트·상거래 상투어를 불용어로 제거', () => {
     expect(tokenize('이번주 무조건 사고싶은 신제품 제품들 모음')).toEqual([]);
   });
+  it('영어 의문·필러 상투어를 불용어로 제거', () => {
+    expect(tokenize('when vs which get this camera')).toEqual(['camera']);
+  });
   it('순수 숫자 토큰은 검색 노이즈라 제거 (모델명의 영숫자는 유지)', () => {
     expect(tokenize('갤럭시 16 2026')).toEqual(['갤럭시']);
     expect(tokenize('rtx4090 11')).toEqual(['rtx4090']);
@@ -65,6 +68,12 @@ describe('topKeywords', () => {
   });
   it('빈도가 길이보다 우선', () => {
     expect(topKeywords(['커피 커피 아메리카노'], 2)).toEqual(['커피', '아메리카노']);
+  });
+  it('여러 영상에 걸쳐 반복된 주제를, 한 영상에서만 여러 번 나온 단어보다 우선', () => {
+    // dji: 영상 2개에 등장(DF 2, TF 2). '레전드'는 한 영상 제목에서만 반복(DF 1, TF 3).
+    // DF 우선 정렬이므로 TF가 더 높아도 dji가 앞선다.
+    const docs = ['dji 드론 촬영', 'dji 짐벌 후기', '레전드 레전드 레전드 토스터'];
+    expect(topKeywords(docs, 1)).toEqual(['dji']);
   });
 });
 

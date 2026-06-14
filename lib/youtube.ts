@@ -93,8 +93,9 @@ export async function analyzeChannel(input: string, now: Date): Promise<Analysis
   const recentIds = await getRecentVideoIds(channel.uploadsPlaylist, 25);
   const channelVideos = await getVideoDetails(recentIds);
 
-  const texts = channelVideos.flatMap((v) => [v.title, ...(v.tags ?? [])]);
-  const keywords = topKeywords(texts, 8);
+  // 영상 1개 = 문서 1개(제목+태그). 문서 빈도(DF) 기반 랭킹을 위해 영상별로 묶는다.
+  const docs = channelVideos.map((v) => [v.title, ...(v.tags ?? [])].join(' '));
+  const keywords = topKeywords(docs, 8);
   const channelBest = rankVideos(channelVideos, now, 5);
   const avgRecentViews =
     channelVideos.length > 0
