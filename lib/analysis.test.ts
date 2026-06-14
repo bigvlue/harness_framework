@@ -75,6 +75,18 @@ describe('topKeywords', () => {
     const docs = ['dji 드론 촬영', 'dji 짐벌 후기', '레전드 레전드 레전드 토스터'];
     expect(topKeywords(docs, 1)).toEqual(['dji']);
   });
+  it('여러 영상에 반복된 2어절 구문(bigram)을 키워드로 surface하고 구성 단일어는 억제', () => {
+    const docs = ['로봇 청소기 신형', '로봇 청소기 후기', '발뮤다 토스터'];
+    const r = topKeywords(docs, 5);
+    expect(r[0]).toBe('로봇 청소기'); // DF 2 구문이 최상위
+    expect(r).not.toContain('로봇'); // 구문에 흡수돼 억제
+    expect(r).not.toContain('청소기');
+  });
+  it('한 번만 나온 bigram은 노이즈라 승격하지 않음(DF≥2 게이트)', () => {
+    const docs = ['갤럭시 워치 신제품', '아이폰 후기'];
+    // '갤럭시 워치'는 DF 1 → 구문으로 채택 안 됨. 단일어는 그대로.
+    expect(topKeywords(docs, 5)).not.toContain('갤럭시 워치');
+  });
 });
 
 describe('scoreVideo / rankVideos', () => {
@@ -115,6 +127,11 @@ describe('extractRecommendations', () => {
     const recs = extractRecommendations(viral, ['mukbang'], 1);
     expect(recs[0].expansion).toBe(false);
     expect(recs[0].fit).toContain('강화 추천');
+  });
+  it('채널 키워드가 bigram이면 구성 단일어도 커버된 것으로 인식', () => {
+    const recs = extractRecommendations(viral, ['mukbang challenge'], 1);
+    expect(recs[0].topic).toContain('mukbang');
+    expect(recs[0].expansion).toBe(false); // 'mukbang'이 채널 bigram의 구성어라 커버됨
   });
 });
 

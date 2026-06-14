@@ -54,27 +54,51 @@ export function tokenize(text: string): string[] {
 // 클릭베이트 채널에선 한 영상에서만 반복되는 잡음 단어가 TF로는 높게 잡히므로,
 // "몇 개의 영상에 걸쳐 등장했는가"(문서 빈도, DF)를 1순위로 본다.
 // DF 동률이면 전체 출현 빈도(TF), 그다음 길이(구체성) 순.
+//
+// 단일어(unigram)와 함께 인접 토큰 2어절 구문(bigram)도 후보로 둔다.
+// "로봇 청소기"처럼 여러 영상에 반복되는 구문은 단일어보다 구체적인 주제 신호다.
+// 단, 1회성 bigram은 노이즈라 DF≥2인 것만 채택한다.
 export function topKeywords(documents: string[], n: number): string[] {
   const df = new Map<string, number>(); // 문서(영상) 빈도
   const tf = new Map<string, number>(); // 전체 출현 빈도
+  const bigrams = new Set<string>(); // 어떤 term이 bigram인지 표시
+
   for (const doc of documents) {
+    const toks = tokenize(doc);
     const seen = new Set<string>();
-    for (const tok of tokenize(doc)) {
-      tf.set(tok, (tf.get(tok) ?? 0) + 1);
-      if (!seen.has(tok)) {
-        df.set(tok, (df.get(tok) ?? 0) + 1);
-        seen.add(tok);
+    const tally = (term: string, isBigram: boolean) => {
+      tf.set(term, (tf.get(term) ?? 0) + 1);
+      if (!seen.has(term)) {
+        df.set(term, (df.get(term) ?? 0) + 1);
+        seen.add(term);
       }
+      if (isBigram) bigrams.add(term);
+    };
+    for (let i = 0; i < toks.length; i++) {
+      tally(toks[i], false);
+      if (i + 1 < toks.length) tally(`${toks[i]} ${toks[i + 1]}`, true);
     }
   }
-  return [...df.keys()]
+
+  const ranked = [...df.keys()]
+    .filter((t) => !bigrams.has(t) || df.get(t)! >= 2) // bigram은 DF≥2만
     .sort(
       (a, b) =>
         df.get(b)! - df.get(a)! || // 여러 영상에 걸친 주제 우선
         tf.get(b)! - tf.get(a)! || // 동률이면 전체 빈도
-        b.length - a.length, // 그다음 길이(구체성)
-    )
-    .slice(0, n);
+        b.length - a.length, // 그다음 길이(구체성) → 구문이 단일어보다 우선
+    );
+
+  // 중복 억제: 채택한 bigram의 구성 단일어는 결과에서 제외한다.
+  const result: string[] = [];
+  const covered = new Set<string>();
+  for (const term of ranked) {
+    if (result.length >= n) break;
+    if (covered.has(term)) continue;
+    result.push(term);
+    if (bigrams.has(term)) for (const part of term.split(' ')) covered.add(part);
+  }
+  return result;
 }
 
 export function scoreVideo(viewCount: number, publishedAt: string, now: Date): number {
@@ -97,7 +121,9 @@ export function extractRecommendations(
   channelKeywords: string[],
   n: number,
 ): Recommendation[] {
-  const channelSet = new Set(channelKeywords);
+  // 채널 키워드가 bigram("로봇 청소기")이어도 바이럴 제목의 단일어 토큰과 매칭되도록
+  // 구성 단어로 분해해 커버리지 집합을 만든다.
+  const channelSet = new Set(channelKeywords.flatMap((k) => k.split(' ')));
   const counts = new Map<string, { count: number; top: VideoStat }>();
   for (const v of viralVideos) {
     for (const tok of tokenize(v.title)) {
