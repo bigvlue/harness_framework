@@ -6,6 +6,16 @@
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-14
+
+키워드 추출 품질 개선. v0.2.0과 하위 호환.
+
+### Changed
+- 키워드 랭킹을 문서 빈도(DF) 기준으로 변경: 여러 영상에 걸쳐 반복되는 주제가
+  한 영상 제목에서만 반복된 클릭베이트성 단어보다 우선. 하드 임계값이 없어
+  바이럴 검색용 상위 키워드가 비지 않음.
+- 영어 필러 불용어 확장(`when`, `where`, `which`, `vs`, `get` 등).
+
 ## [0.2.0] - 2026-06-14
 
 분석 효율과 비교·재현성을 높인 기능 추가. v0.1.0과 하위 호환.
@@ -16,7 +26,8 @@
 - 여러 채널 비교: `/compare` 페이지에서 두 채널의 키워드를 나란히 비교
 - 캐시 상태 표시: 대시보드에 "N분 전 분석됨" 상대 시간 노출(분석 시각을 결과에 기록)
 
-[Unreleased]: https://github.com/bigvlue/harness_framework/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/bigvlue/harness_framework/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/bigvlue/harness_framework/releases/tag/v0.2.1
 [0.2.0]: https://github.com/bigvlue/harness_framework/releases/tag/v0.2.0
 [0.1.0]: https://github.com/bigvlue/harness_framework/releases/tag/v0.1.0
 
