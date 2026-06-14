@@ -6,6 +6,18 @@
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-06-14
+
+키워드 추출 품질 추가 개선. v0.2.1과 하위 호환.
+
+### Added
+- 반복 구문(bigram) 키워드: 여러 영상(DF≥2)에 걸쳐 반복되는 2어절 구문을
+  키워드로 추출하고, 구문 채택 시 구성 단일어는 중복 억제.
+
+### Changed
+- 토큰 노이즈 필터 추가: 사-한자 숫자어로만 이뤄진 길이 3 이상 토큰(예: `일십백천만`)과
+  `니다`로 끝나는 활용 서술어 토큰 제거. 2글자 실단어(`사육`/`오만`)는 보존.
+
 ## [0.2.1] - 2026-06-14
 
 키워드 추출 품질 개선. v0.2.0과 하위 호환.
@@ -26,7 +38,8 @@
 - 여러 채널 비교: `/compare` 페이지에서 두 채널의 키워드를 나란히 비교
 - 캐시 상태 표시: 대시보드에 "N분 전 분석됨" 상대 시간 노출(분석 시각을 결과에 기록)
 
-[Unreleased]: https://github.com/bigvlue/harness_framework/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/bigvlue/harness_framework/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/bigvlue/harness_framework/releases/tag/v0.2.2
 [0.2.1]: https://github.com/bigvlue/harness_framework/releases/tag/v0.2.1
 [0.2.0]: https://github.com/bigvlue/harness_framework/releases/tag/v0.2.0
 [0.1.0]: https://github.com/bigvlue/harness_framework/releases/tag/v0.1.0
